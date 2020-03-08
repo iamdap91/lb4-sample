@@ -1,0 +1,10 @@
+{
+  "name": "mysql",
+  "connector": "mysql",
+  "url": "mysql://root:example@192.168.0.45:3306/lb4",
+  "host": "192.168.0.45",
+  "port": 3306,
+  "user": "root",
+  "password": "example",
+  "database": "lb4"
+}

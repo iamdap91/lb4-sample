@@ -2,8 +2,6 @@ import {getService} from '@loopback/service-proxy';
 import {inject, Provider} from '@loopback/core';
 import {GeocoderDataSource} from '../datasources';
 
-
-// Add the following interface
 export interface GeoPoint {
   y: number;
   x: number;

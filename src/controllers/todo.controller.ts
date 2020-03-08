@@ -20,12 +20,18 @@ import {
 } from '@loopback/rest';
 import {Todo} from '../models';
 import {TodoRepository} from '../repositories';
+import {inject} from '@loopback/context';
+import {HttpErrors} from '@loopback/rest/dist';
+// @ts-ignore
+import {Geocoder} from '../services';
 
 export class TodoController {
   constructor(
     @repository(TodoRepository)
-    public todoRepository : TodoRepository,
-  ) {}
+    public todoRepository: TodoRepository,
+    @inject('services.Geocoder') protected geoService: Geocoder,
+  ) {
+  }
 
   @post('/todos', {
     responses: {
@@ -46,8 +52,25 @@ export class TodoController {
         },
       },
     })
-    todo: Omit<Todo, 'id'>,
+      todo: Omit<Todo, 'id'>,
   ): Promise<Todo> {
+
+    console.log(todo);
+
+    // if (todo.remindAtAddress) {
+    //   const geo = await this.geoService.geocode(todo.remindAtAddress);
+    //
+    //   if (!geo[0]) {
+    //     // address not found
+    //     throw new HttpErrors.BadRequest(
+    //       `Address not found: ${todo.remindAtAddress}`,
+    //     );
+    //   }
+    //
+    //   // Encode the coordinates as "lat,lng" (Google Maps API format). See also
+    //   todo.remindAtGeo = `${geo[0].y},${geo[0].x}`;
+    // }
+
     return this.todoRepository.create(todo);
   }
 
@@ -102,7 +125,7 @@ export class TodoController {
         },
       },
     })
-    todo: Todo,
+      todo: Todo,
     @param.where(Todo) where?: Where<Todo>,
   ): Promise<Count> {
     return this.todoRepository.updateAll(todo, where);
@@ -122,7 +145,7 @@ export class TodoController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Todo, {exclude: 'where'}) filter?: FilterExcludingWhere<Todo>
+    @param.filter(Todo, {exclude: 'where'}) filter?: FilterExcludingWhere<Todo>,
   ): Promise<Todo> {
     return this.todoRepository.findById(id, filter);
   }
@@ -143,7 +166,7 @@ export class TodoController {
         },
       },
     })
-    todo: Todo,
+      todo: Todo,
   ): Promise<void> {
     await this.todoRepository.updateById(id, todo);
   }

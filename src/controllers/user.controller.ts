@@ -22,7 +22,7 @@ import {User} from '../models';
 import {UserRepository} from '../repositories';
 import _ from 'lodash';
 import {BindingKey, inject} from '@loopback/context';
-import {PasswordHasherBindings} from '../keys';
+import {PasswordHasherBindings, TokenServiceBindings} from '../keys';
 import {HttpErrors} from '@loopback/rest/dist';
 import {validateCredentials} from '../services/validator';
 import {PasswordHasher} from '../services/hash.password.bcryptjs';
@@ -33,6 +33,10 @@ export class UserController {
     public userRepository: UserRepository,
     @inject(PasswordHasherBindings.PASSWORD_HASHER)
     public passwordHasher: PasswordHasher,
+    @inject(TokenServiceBindings.TOKEN_SECRET)
+    private jwtSecret: string,
+    @inject(TokenServiceBindings.TOKEN_EXPIRES_IN)
+    private jwtExpiresIn: string,
   ) {
   }
 
@@ -57,6 +61,10 @@ export class UserController {
     })
       newUserRequest: Omit<User, 'id'>,
   ): Promise<User> {
+
+    console.log(this.jwtExpiresIn);
+    console.log(this.jwtSecret);
+
     newUserRequest.roles = `['student']`;
     // validate email and password
     validateCredentials(_.pick(newUserRequest, ['email', 'password']));

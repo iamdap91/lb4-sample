@@ -1,5 +1,5 @@
 import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
+import {ApplicationConfig, BindingKey} from '@loopback/core';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
@@ -9,6 +9,20 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
+import {AuthenticationComponent} from '@loopback/authentication';
+import {PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings} from './keys';
+import {BcryptHasher} from './services/hash.password.bcryptjs';
+import {UserService} from './services';
+
+
+export interface PackageInfo {
+  name: string;
+  version: string;
+  description: string;
+}
+
+const pkg: PackageInfo = require('../package.json');
+export const PackageKey = BindingKey.create<PackageInfo>('application.package');
 
 export class Lb4SampleApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -28,6 +42,13 @@ export class Lb4SampleApplication extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
+    // Bind authentication component related elements
+    this.component(AuthenticationComponent);
+
+    this.setUpBindings();
+
+    // this.bind(UserServiceBindings.USER_SERVICE).toClass(UserService);
+
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
@@ -39,4 +60,29 @@ export class Lb4SampleApplication extends BootMixin(
       },
     };
   }
+
+
+  setUpBindings(): void {
+    // // Bind package.json to the application context
+    // this.bind(PackageKey).to(pkg);
+    //
+    // this.bind(TokenServiceBindings.TOKEN_SECRET).to(
+    //   TokenServiceConstants.TOKEN_SECRET_VALUE,
+    // );
+    //
+    // this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
+    //   TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
+    // );
+    //
+    // this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+
+    // // Bind bcrypt hash services
+    this.bind(PasswordHasherBindings.ROUNDS).to(10);
+    this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
+
+    // // @ts-ignore
+    // this.bind(UserServiceBindings.USER_SERVICE).toClass(UserService);
+  }
 }
+
+

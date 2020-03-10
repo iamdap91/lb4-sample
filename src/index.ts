@@ -5,6 +5,8 @@ export {Lb4SampleApplication};
 
 export async function main(options: ApplicationConfig = {}) {
   const app = new Lb4SampleApplication(options);
+  console.log(options);
+
   await app.boot();
   await app.start();
 

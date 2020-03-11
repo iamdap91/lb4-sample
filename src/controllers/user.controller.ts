@@ -30,6 +30,9 @@ import {UserService} from '../services';
 import {authenticate, TokenService} from '@loopback/authentication';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/utils/basic.authorizor';
+import {OPERATION_SECURITY_SPEC} from '../services/utils/security-spec';
+import {UserProfileSchema} from '../datasources/specs/user-controller.specs';
+import {SecurityBindings} from '@loopback/security';
 
 const CredentialsSchema = {
   type: 'object',
@@ -123,6 +126,7 @@ export class UserController {
       },
     },
   })
+  @authenticate('jwt')
   async find(
     @param.filter(User) filter?: Filter<User>,
   ): Promise<User[]> {
@@ -266,6 +270,32 @@ export class UserController {
     // @ts-ignore
     const token = await this.jwtService.generateToken(userInfo);
     return {token};
+  }
+
+
+  @get('/users/me', {
+    security: OPERATION_SECURITY_SPEC,
+    responses: {
+      '200': {
+        description: 'The current user profile',
+        content: {
+          'application/json': {
+            schema: UserProfileSchema,
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt')
+  @authorize({
+    allowedRoles: ['admin', 'support', 'customer', 'test'],
+    voters: [basicAuthorization],
+  })
+  async printCurrentUser(
+    @inject(SecurityBindings.USER)
+      user: User,
+  ): Promise<User> {
+    return this.userRepository.findById(user.id);
   }
 
 }

@@ -17,15 +17,17 @@ export async function basicAuthorization(
   authorizationCtx: AuthorizationContext,
   metadata: AuthorizationMetadata,
 ): Promise<AuthorizationDecision> {
+
   // No access if authorization details are missing
-  let currentUser: UserProfile;
+  let currentUser: any;
   if (authorizationCtx.principals.length > 0) {
     const user = _.pick(authorizationCtx.principals[0], [
       'id',
       'name',
       'roles',
     ]);
-    currentUser = {[securityId]: user.id, name: user.name, roles: user.roles};
+    user.roles = user.roles.split(',');
+    currentUser = user;
   } else {
     return AuthorizationDecision.DENY;
   }

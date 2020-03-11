@@ -8,7 +8,7 @@ import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
-import {MySequence} from './sequence';
+import {MyAuthenticationSequence} from './sequence';
 import {AuthenticationComponent, registerAuthenticationStrategy} from '@loopback/authentication';
 import {PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings} from './keys';
 import {BcryptHasher} from './services/utils/hash.password.bcryptjs';
@@ -16,6 +16,7 @@ import {UserService} from './services';
 import {JWTService} from './services/jwt-service';
 import {AuthorizationComponent} from '@loopback/authorization';
 import {JWTAuthenticationStrategy} from './authentication-strategies/jwt-strategy';
+import {SECURITY_SCHEME_SPEC} from './services/utils/security-spec';
 
 
 export interface PackageInfo {
@@ -33,8 +34,26 @@ export class Lb4SampleApplication extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
+    this.api({
+      openapi: '3.0.0',
+      info: {title: pkg.name, version: pkg.version},
+      paths: {},
+      components: {securitySchemes: SECURITY_SCHEME_SPEC},
+      servers: [{url: '/'}],
+    });
+
+    // Bind authentication component related elements
+    this.component(AuthenticationComponent);
+    this.component(AuthorizationComponent);
+    // authentication
+    registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
+
     // Set up the custom sequence
-    this.sequence(MySequence);
+    this.sequence(MyAuthenticationSequence);
+
+
+    // Set up the custom sequence
+    // this.sequence(MySequence);
 
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
@@ -45,10 +64,9 @@ export class Lb4SampleApplication extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
-    // Bind authentication component related elements
-    this.component(AuthenticationComponent);
-
     this.setUpBindings();
+
+    // this.bind(UserServiceBindings.USER_SERVICE).toClass(UserService);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here

@@ -61,7 +61,8 @@
     "jsonwebtoken": "^8.5.1",
     "loopback-connector-mysql": "^5.4.0",
     "loopback-connector-rest": "^3.4.1",
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "@loopback/authorization": "latest"
   },
   "devDependencies": {
     "@loopback/build": "^4.0.0",

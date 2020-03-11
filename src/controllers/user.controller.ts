@@ -27,7 +27,9 @@ import {HttpErrors} from '@loopback/rest/dist';
 import {validateCredentials} from '../services/utils/validator';
 import {PasswordHasher} from '../services/utils/hash.password.bcryptjs';
 import {UserService} from '../services';
-import {TokenService} from '@loopback/authentication';
+import {authenticate, TokenService} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
+import {basicAuthorization} from '../services/utils/basic.authorizor';
 
 const CredentialsSchema = {
   type: 'object',
@@ -104,6 +106,7 @@ export class UserController {
   ): Promise<Count> {
     return this.userRepository.count(where);
   }
+
 
   @get('/users', {
     responses: {
@@ -264,6 +267,5 @@ export class UserController {
     const token = await this.jwtService.generateToken(userInfo);
     return {token};
   }
-
 
 }

@@ -9,11 +9,13 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import {AuthenticationComponent} from '@loopback/authentication';
+import {AuthenticationComponent, registerAuthenticationStrategy} from '@loopback/authentication';
 import {PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings} from './keys';
 import {BcryptHasher} from './services/utils/hash.password.bcryptjs';
 import {UserService} from './services';
 import {JWTService} from './services/jwt-service';
+import {AuthorizationComponent} from '@loopback/authorization';
+import {JWTAuthenticationStrategy} from './authentication-strategies/jwt-strategy';
 
 
 export interface PackageInfo {
@@ -48,8 +50,6 @@ export class Lb4SampleApplication extends BootMixin(
 
     this.setUpBindings();
 
-    // this.bind(UserServiceBindings.USER_SERVICE).toClass(UserService);
-
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
@@ -64,9 +64,9 @@ export class Lb4SampleApplication extends BootMixin(
 
 
   setUpBindings(): void {
-    // // Bind package.json to the application context
-    // this.bind(PackageKey).to(pkg);
-    //
+    // Bind package.json to the application context
+    this.bind(PackageKey).to(pkg);
+
     this.bind(TokenServiceBindings.TOKEN_SECRET).to(
       TokenServiceConstants.TOKEN_SECRET_VALUE,
     );

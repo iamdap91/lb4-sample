@@ -4,10 +4,10 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {BindingKey} from '@loopback/context';
-import {TokenService, UserService} from '@loopback/authentication';
+import {TokenService} from '@loopback/authentication';
 import {User} from './models';
-import {Credentials} from 'crypto';
-import {PasswordHasher} from './services/hash.password.bcryptjs';
+import {PasswordHasher} from './services/utils/hash.password.bcryptjs';
+import {UserService} from './services';
 
 export namespace TokenServiceConstants {
   export const TOKEN_SECRET_VALUE = 'myjwts3cr3t';
@@ -34,7 +34,7 @@ export namespace PasswordHasherBindings {
 }
 
 export namespace UserServiceBindings {
-  export const USER_SERVICE = BindingKey.create<UserService<User, Credentials>>(
+  export const USER_SERVICE = BindingKey.create<UserService>(
     'services.user.service',
   );
 }

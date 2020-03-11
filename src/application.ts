@@ -11,8 +11,9 @@ import path from 'path';
 import {MySequence} from './sequence';
 import {AuthenticationComponent} from '@loopback/authentication';
 import {PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings} from './keys';
-import {BcryptHasher} from './services/hash.password.bcryptjs';
+import {BcryptHasher} from './services/utils/hash.password.bcryptjs';
 import {UserService} from './services';
+import {JWTService} from './services/jwt-service';
 
 
 export interface PackageInfo {
@@ -74,14 +75,13 @@ export class Lb4SampleApplication extends BootMixin(
       TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
     );
     //
-    // this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
 
     // // Bind bcrypt hash services
     this.bind(PasswordHasherBindings.ROUNDS).to(10);
     this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
 
-    // // @ts-ignore
-    // this.bind(UserServiceBindings.USER_SERVICE).toClass(UserService);
+    this.bind(UserServiceBindings.USER_SERVICE).toClass(UserService);
   }
 }
 

@@ -6,7 +6,7 @@
 import {genSalt, hash} from 'bcryptjs';
 import {compare} from 'bcryptjs';
 import {inject} from '@loopback/core';
-import {PasswordHasherBindings} from '../keys';
+import {PasswordHasherBindings} from '../../keys';
 
 /**
  * Service HashPassword using module 'bcryptjs'.

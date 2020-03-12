@@ -3,7 +3,7 @@ import {PasswordHasher} from './utils/hash.password.bcryptjs';
 import {PasswordHasherBindings} from '../keys';
 import {UserRepository} from '../repositories';
 import {repository} from '@loopback/repository';
-import {User} from '../models';
+import {Credentials, User} from '../models';
 import {HttpErrors} from '@loopback/rest/dist';
 
 @bind({scope: BindingScope.TRANSIENT})
@@ -15,7 +15,7 @@ export class UserService {
   ) {}
 
 
-  async verifyCredentials(credentials: any): Promise<User> {
+  async verifyCredentials(credentials: Credentials): Promise<User> {
     const invalidCredentialsError = 'Invalid email or password.';
 
     const foundUser = await this.userRepository.findOne({
@@ -26,8 +26,9 @@ export class UserService {
     }
 
     const credentialsFound = await this.userRepository.findOne(
-      {where: {id: credentials.id}}
+      {where: {id: foundUser.id}}
     );
+
     if (!credentialsFound) {
       throw new HttpErrors.Unauthorized(invalidCredentialsError);
     }

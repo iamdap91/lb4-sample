@@ -18,7 +18,7 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {User} from '../models';
+import {Credentials, User} from '../models';
 import {UserRepository} from '../repositories';
 import _ from 'lodash';
 import {BindingKey, inject} from '@loopback/context';
@@ -119,14 +119,13 @@ export class UserController {
           'application/json': {
             schema: {
               type: 'array',
-              items: getModelSchemaRef(User, {includeRelations: true}),
+              items: getModelSchemaRef(User, {includeRelations: false}),
             },
           },
         },
       },
     },
   })
-  @authenticate('jwt')
   async find(
     @param.filter(User) filter?: Filter<User>,
   ): Promise<User[]> {
@@ -261,9 +260,9 @@ export class UserController {
           },
         },
       },
-    }) credentials: any,
+    }) credentials: Credentials,
   ): Promise<{token: string}> {
-
+    console.log(credentials);
     // ensure the user exists, and the password is correct
     const user = await this.userService.verifyCredentials(credentials);
     const userInfo = _.omit(user, ['password']);

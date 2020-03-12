@@ -1,5 +1,10 @@
 import {Entity, model, property} from '@loopback/repository';
 
+export type Credentials = {
+  email: string;
+  password: string;
+};
+
 @model({settings: {strict: true}})
 export class User extends Entity {
   @property({

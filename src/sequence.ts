@@ -39,8 +39,7 @@ export class MyAuthenticationSequence implements SequenceHandler {
     try {
       const {request, response} = context;
       const route = this.findRoute(request);
-
-      console.log(route);
+      // console.log(route);
 
       //call authentication action
       await this.authenticateRequest(request);

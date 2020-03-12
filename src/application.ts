@@ -51,10 +51,6 @@ export class Lb4SampleApplication extends BootMixin(
     // Set up the custom sequence
     this.sequence(MyAuthenticationSequence);
 
-
-    // Set up the custom sequence
-    // this.sequence(MySequence);
-
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
 
@@ -88,11 +84,11 @@ export class Lb4SampleApplication extends BootMixin(
     this.bind(TokenServiceBindings.TOKEN_SECRET).to(
       TokenServiceConstants.TOKEN_SECRET_VALUE,
     );
-    //
+
     this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
       TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
     );
-    //
+
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
 
     // // Bind bcrypt hash services

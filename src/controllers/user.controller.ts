@@ -209,12 +209,12 @@ export class UserController {
   }
 
   @del('/users/{id}', {
-    responses: {
-      '204': {
-        description: 'User DELETE success',
-      },
+  responses: {
+    '204': {
+      description: 'User DELETE success',
     },
-  })
+  },
+})
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.userRepository.deleteById(id);
   }

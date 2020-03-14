@@ -1,5 +1,7 @@
-import {Request, RestBindings, get, ResponseObject} from '@loopback/rest';
+import {Request, RestBindings, get, ResponseObject, post} from '@loopback/rest';
 import {inject} from '@loopback/context';
+import axios from 'axios';
+import {Client} from '@elastic/elasticsearch';
 
 /**
  * OpenAPI response for ping()
@@ -32,7 +34,8 @@ const PING_RESPONSE: ResponseObject = {
  * A simple controller to bounce back http requests
  */
 export class PingController {
-  constructor(@inject(RestBindings.Http.REQUEST) private req: Request) {}
+  constructor(@inject(RestBindings.Http.REQUEST) private req: Request) {
+  }
 
   // Map to `GET /ping`
   @get('/ping', {
@@ -49,4 +52,35 @@ export class PingController {
       headers: Object.assign({}, this.req.headers),
     };
   }
+
+  @post('/axi', {
+    responses: {
+      '200': {
+        description: 'es request function',
+      },
+    },
+  })
+  async axiRequest(): Promise<any> {
+    const result = await axios.get('http://192.168.0.45:9200');
+    console.log(result);
+    return result;
+  }
+
+  @post('/es', {
+    responses: {
+      '200': {
+        description: 'es request function',
+      },
+    },
+  })
+  async esRequest(): Promise<any> {
+    const client = new Client({node: 'http://192.168.0.45:9200'});
+    const result = await client.search({
+      index: 'dti_health-20200211',
+      // body: {foo: 'bar'},
+    });
+
+    return result.body;
+  }
+
 }

@@ -48,7 +48,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "^7.6.1",
     "@loopback/authentication": "^4.0.0",
-    "@loopback/authorization": "latest",
+    "@loopback/authorization": "^0.5.2",
     "@loopback/boot": "^2.0.0",
     "@loopback/context": "^3.0.0",
     "@loopback/core": "^2.0.0",
@@ -61,7 +61,7 @@
     "bcrypt": "^4.0.1",
     "bcryptjs": "^2.4.3",
     "elasticsearch": "^16.6.0",
-    "isemail": "latest",
+    "isemail": "^3.2.0",
     "jsonwebtoken": "^8.5.1",
     "loopback-connector-mysql": "^5.4.0",
     "loopback-connector-rest": "^3.4.1",

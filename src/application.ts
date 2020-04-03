@@ -18,7 +18,6 @@ import {AuthorizationComponent} from '@loopback/authorization';
 import {JWTAuthenticationStrategy} from './authentication-strategies/jwt-strategy';
 import {SECURITY_SCHEME_SPEC} from './services/utils/security-spec';
 
-
 export interface PackageInfo {
   name: string;
   version: string;
@@ -27,6 +26,7 @@ export interface PackageInfo {
 
 const pkg: PackageInfo = require('../package.json');
 export const PackageKey = BindingKey.create<PackageInfo>('application.package');
+
 
 export class Lb4SampleApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),

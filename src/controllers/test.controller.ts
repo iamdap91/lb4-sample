@@ -1,31 +1,27 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  post,
-  param,
-  get,
-  getFilterSchemaFor,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  patch,
-  put,
-  del,
-  requestBody,
-} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
 import {Test} from '../models';
 import {TestRepository} from '../repositories';
+import {UserProfileSchema} from '../datasources/specs/user-controller.specs';
+import {Client} from '@elastic/elasticsearch';
+
+const esSchema = {
+  type: 'object',
+  // title: 'loopback.Count',
+  properties: {
+    took: {type: 'number'},
+    timed_out: {type: 'boolean'},
+    _shards: {type: 'Object'},
+    hits: {type: 'Object'},
+  },
+};
 
 export class TestController {
   constructor(
     @repository(TestRepository)
-    public testRepository : TestRepository,
-  ) {}
+    public testRepository: TestRepository,
+  ) {
+  }
 
   @post('/tests', {
     responses: {
@@ -46,7 +42,7 @@ export class TestController {
         },
       },
     })
-    test: Omit<Test, 'id'>,
+      test: Omit<Test, 'id'>,
   ): Promise<Test> {
     return this.testRepository.create(test);
   }
@@ -102,7 +98,7 @@ export class TestController {
         },
       },
     })
-    test: Test,
+      test: Test,
     @param.where(Test) where?: Where<Test>,
   ): Promise<Count> {
     return this.testRepository.updateAll(test, where);
@@ -122,7 +118,7 @@ export class TestController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Test, {exclude: 'where'}) filter?: FilterExcludingWhere<Test>
+    @param.filter(Test, {exclude: 'where'}) filter?: FilterExcludingWhere<Test>,
   ): Promise<Test> {
     return this.testRepository.findById(id, filter);
   }
@@ -143,7 +139,7 @@ export class TestController {
         },
       },
     })
-    test: Test,
+      test: Test,
   ): Promise<void> {
     await this.testRepository.updateById(id, test);
   }
@@ -172,4 +168,35 @@ export class TestController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.testRepository.deleteById(id);
   }
+
+  @post('/test/esRequest', {
+    responses: {
+      '200': {
+        description: 'Test esRequest method',
+        content: {
+          'application/json': {
+            schema: esSchema,
+          },
+        },
+      },
+    },
+  })
+  async esRequest(
+    @requestBody({description: 'query'}) query: Object,
+  ): Promise<any> {
+    return await elasticSearchRequest(query);
+  };
 }
+
+
+
+const elasticSearchRequest = (query: Object) => new Promise(async (resolve, reject) => {
+  const client = new Client({node: 'http://192.168.0.42:19200/'});
+  // const testQuery = {
+  // index: 'dti_result-20200319',
+  // };
+  const result = await client.search(query);
+  resolve(result.body);
+});
+
+
